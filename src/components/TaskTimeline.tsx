@@ -1,19 +1,3 @@
-import { ScrollTo } from "@/components/ScrollTo";
-import { TaskBody } from "@/components/TaskBody";
-import { Button, ButtonProps } from "@/components/ui/button";
-import { Chip } from "@/components/ui/chip";
-import { listItemVariants } from "@/components/ui/list";
-import { useFilterStore } from "@/stores/filter-store";
-import { useSettingsStore } from "@/stores/settings-store";
-import { useTaskDialogStore } from "@/stores/task-dialog-store";
-import { formatLocaleDate, todayDate } from "@/utils/date";
-import { HAS_TOUCHSCREEN } from "@/utils/platform";
-import { Task } from "@/utils/task";
-import { TimelineTask } from "@/utils/task-list";
-import { cn } from "@/utils/tw-utils";
-import { useTask } from "@/utils/useTask";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { format } from "date-fns";
 import {
   BellIcon,
   CheckCircleIcon,
@@ -23,16 +7,33 @@ import {
   PlusIcon,
   TrashIcon,
 } from "lucide-react";
+import { Button, ButtonProps } from "@/components/ui/button";
 import {
-  forwardRef,
   HTMLAttributes,
   KeyboardEvent,
   MouseEvent,
   RefObject,
+  forwardRef,
   useCallback,
   useEffect,
   useState,
 } from "react";
+import { formatLocaleDate, todayDate } from "@/utils/date";
+
+import { Chip } from "@/components/ui/chip";
+import { HAS_TOUCHSCREEN } from "@/utils/platform";
+import { ScrollTo } from "@/components/ScrollTo";
+import { Task } from "@/utils/task";
+import { TaskBody } from "@/components/TaskBody";
+import { TimelineTask } from "@/utils/task-list";
+import { cn } from "@/utils/tw-utils";
+import { format } from "date-fns";
+import { listItemVariants } from "@/components/ui/list";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { useFilterStore } from "@/stores/filter-store";
+import { useSettingsStore } from "@/stores/settings-store";
+import { useTask } from "@/utils/useTask";
+import { useTaskDialogStore } from "@/stores/task-dialog-store";
 import { useTranslation } from "react-i18next";
 
 interface TaskTimelineProps {
@@ -103,13 +104,21 @@ export function TaskTimeline(props: TaskTimelineProps) {
     );
   }
 
+  function compareDate(a: TimelineTask, b: TimelineTask) {
+    if (a._timelineDate === undefined || b._timelineDate === undefined) {
+      return -2;
+    }
+    return a._timelineDate?.getTime()  <  b._timelineDate?.getTime() ? -1 : 1;
+  }
+  const orderedTasks = [...tasks].sort((a, b) => compareDate(a, b));
+  console.log(orderedTasks)
   return (
     <div
       ref={parent}
       className="flex flex-col pb-4 sm:justify-center"
       data-testid="task-list"
     >
-      {tasks.map((task, index) => (
+      {orderedTasks.map((task, index) => (
         <div key={task.id}>
           {!task._timelineFlags.firstOfToday && (
             <TaskItem
@@ -259,6 +268,13 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
     },
     [deleteTaskWithConfirmation, task],
   );
+  
+  let borderColor = "";
+  if (task.priority === "A") {
+    borderColor = " border-red-100";
+  } else if (task.priority === "B") {
+    borderColor = " border-orange-100";
+  }
 
   return (
     <div
@@ -268,7 +284,8 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
         listItemVariants({
           variant: "default",
           className:
-            "group relative w-full cursor-pointer self-start sm:px-5" +
+            "group relative w-full cursor-pointer self-start sm:px-5 rounded border bg-gray-800" +
+             borderColor +
             (!HAS_TOUCHSCREEN ? " pr-14 sm:pr-14" : ""),
           selected: false,
         }),

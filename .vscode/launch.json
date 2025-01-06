@@ -10,9 +10,10 @@
       "name": "Debug",
       "url": "http://localhost:5173/",
       "runtimeArgs": [
-        "--disable-web-security"
+        "--disable-web-security --unhandled-rejections=strict"
       ],
-      "webRoot": "${workspaceFolder}"
+      "webRoot": "${workspaceFolder}",
+      "preLaunchTask": "npm: dev",
     }
   ]
 }

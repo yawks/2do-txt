@@ -13,7 +13,7 @@ const tagBoxVariants = cva("inline rounded-sm whitespace-nowrap", {
       success: "text-success",
       info: "text-info",
       warning: "text-warning",
-      priority: "text-pink-800 dark:text-pink-500",
+      priority: "bg-pink-800 dark:bg-pink-500 pl-1 pr-1 mr-2",
       muted: "text-muted-foreground",
     },
   },
