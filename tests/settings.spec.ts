@@ -1,4 +1,4 @@
-import { expect, Page, test } from "@playwright/test";
+import { Page, expect, test } from "@playwright/test";
 import { goto, toggleMenu } from "./playwright-utils";
 
 test.beforeEach(async ({ page }) => {
@@ -49,6 +49,13 @@ test.describe("Language", () => {
     await expect(page.getByLabel("Select language")).toHaveText("Deutsch");
     await expect(page.locator("text=Sprache").first()).toBeVisible();
     await checkInLocalStorage(page, "language", "de");
+
+    // select French
+    await page.getByLabel("Select language").click();
+    await page.getByLabel("French").click();
+    await expect(page.getByLabel("Select language")).toHaveText("Français");
+    await expect(page.locator("text=Langue").first()).toBeVisible();
+    await checkInLocalStorage(page, "language", "fr");
   });
 });
 

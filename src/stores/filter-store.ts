@@ -1,8 +1,9 @@
-import { getPreferencesItem, setPreferencesItem } from "@/utils/preferences";
-import { getTodoFileIds } from "@/utils/todo-files";
 import { createContext, useContext } from "react";
-import { useStore as useZustandStore } from "zustand";
+import { getPreferencesItem, setPreferencesItem } from "@/utils/preferences";
+
 import { createStore } from "zustand/vanilla";
+import { getTodoFileIds } from "@/utils/todo-files";
+import { useStore as useZustandStore } from "zustand";
 
 export type SortKey =
   | "priority"
@@ -23,6 +24,7 @@ export interface FilterFields {
   sortBy: SortKey;
   filterType: FilterType;
   hideCompletedTasks: boolean;
+  hideFutureTasks: boolean;
   selectedTaskListIds: number[];
 }
 
@@ -39,6 +41,7 @@ interface FilterState extends FilterFields {
   toggleTag: (tag: string) => void;
   setSelectedTags: (tags: string[]) => void;
   setHideCompletedTasks: (hideCompletedTasks: boolean) => void;
+  setHideFutureTasks: (hideFutureTasks: boolean) => void;
   setSelectedTaskListIds: (selectedTaskListIds: number[]) => void;
 }
 
@@ -59,6 +62,7 @@ export async function filterLoader(): Promise<FilterFields> {
     sortBy,
     filterType,
     hideCompletedTasks,
+    hideFutureTasks,
   ] = await Promise.all([
     getPreferencesItem<string>("selected-task-list-ids"),
     getPreferencesItem<string>("selected-priorities"),
@@ -95,6 +99,7 @@ export async function filterLoader(): Promise<FilterFields> {
     sortBy: sortBy ?? "unsorted",
     filterType: filterType || "AND",
     hideCompletedTasks: hideCompletedTasks === "true",
+    hideFutureTasks: hideFutureTasks === "true",
   };
 }
 
@@ -110,6 +115,7 @@ export function initializeFilterStore(
     selectedContexts: [],
     selectedTags: [],
     hideCompletedTasks: false,
+    hideFutureTasks: false,
     selectedTaskListIds: [],
     ...preloadedState,
     setSearchTerm: (searchTerm: string) => set({ searchTerm }),
@@ -192,6 +198,10 @@ export function initializeFilterStore(
     setHideCompletedTasks: (hideCompletedTasks: boolean) => {
       set({ hideCompletedTasks });
       setPreferencesItem("hide-completed-tasks", hideCompletedTasks.toString());
+    },
+    setHideFutureTasks: (hideFutureTasks: boolean) => {
+      set({ hideFutureTasks });
+      setPreferencesItem("hide-completed-tasks", hideFutureTasks.toString());
     },
     setSelectedTaskListIds: (selectedTaskListIds: number[]) => {
       set({ selectedTaskListIds });

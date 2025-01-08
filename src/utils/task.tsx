@@ -1,17 +1,8 @@
-import { TagBox } from "@/components/TagBox";
-import { useFilterStore } from "@/stores/filter-store";
+import { Fragment, ReactNode } from "react";
 import {
   PriorityTransformation,
   useSettingsStore,
 } from "@/stores/settings-store";
-import {
-  formatDate,
-  formatLocaleDate,
-  parseDate,
-  todayDate,
-} from "@/utils/date";
-import { cn } from "@/utils/tw-utils";
-import { generateId } from "@/utils/uuid";
 import {
   addBusinessDays,
   addDays,
@@ -19,9 +10,19 @@ import {
   addWeeks,
   addYears,
 } from "date-fns";
-import reactParse from "html-react-parser";
+import {
+  formatDate,
+  formatLocaleDate,
+  parseDate,
+  todayDate,
+} from "@/utils/date";
+
+import { TagBox } from "@/components/TagBox";
+import { cn } from "@/utils/tw-utils";
+import { generateId } from "@/utils/uuid";
 import { marked } from "marked";
-import { Fragment, ReactNode } from "react";
+import reactParse from "html-react-parser";
+import { useFilterStore } from "@/stores/filter-store";
 import { useTranslation } from "react-i18next";
 
 marked.Renderer.prototype.paragraph = (text) => {
@@ -187,19 +188,28 @@ export function useFormatBody() {
   } = useTranslation();
   const sortBy = useFilterStore((state) => state.sortBy);
   return (task: Task) => {
+    const contexts = task.body
+      .split(/\s+/)
+      .filter((word) => word.startsWith("@"));
+    
+    const projects = task.body
+      .split(/\s+/)
+      .filter((word) => word.startsWith("+"));
+    
     const subStrings = task.body
       .trim()
       .split(/\s+/)
-      .map((t) => t.trim());
+      .filter((word) => !word.startsWith("@") && !word.startsWith("+"));
 
     const elements: ReactNode[] = subStrings
       .map((token, index) => {
-        if (/^@\S+/.test(token)) {
+        /*if (/^@\S+/.test(token)) {
           return (
             <TagBox
               variant={outline && !task.completed ? "outline" : undefined}
               color={task.completed ? "muted" : "success"}
               key={index}
+              className=""
             >
               {token}
             </TagBox>
@@ -214,7 +224,8 @@ export function useFormatBody() {
               {token}
             </TagBox>
           );
-        } else if (/[^:]+:[^/:][^:]*/.test(token)) {
+        } else*/
+        if (/[^:]+:[^/:][^:]*/.test(token)) {
           const substrings = token.split(":");
           const key = substrings[0].toLowerCase();
           if (key === "due" && !dueDate) {
@@ -251,6 +262,18 @@ export function useFormatBody() {
         }
       })
       .filter((e) => !!e);
+    
+    elements.push(
+      <div className="mt-2">
+        <TagBox
+          variant={outline && !task.completed ? "outline" : undefined}
+          color={task.completed ? "muted" : "success"}
+          key={}
+          className=""
+          >
+          {contexts.join(" ")}
+        </TagBox>
+      </div>);
 
     if (task.priority && sortBy !== "priority") {
       const priorityElement = (

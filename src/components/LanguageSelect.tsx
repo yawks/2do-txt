@@ -1,4 +1,4 @@
-import { Label } from "@/components/ui/label";
+import { Language, useSettingsStore } from "@/stores/settings-store";
 import {
   Select,
   SelectContent,
@@ -6,7 +6,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Language, useSettingsStore } from "@/stores/settings-store";
+
+import { Label } from "@/components/ui/label";
 import { useTranslation } from "react-i18next";
 
 export function LanguageSelect() {
@@ -29,6 +30,9 @@ export function LanguageSelect() {
           </SelectItem>
           <SelectItem value="de" aria-label="German">
             {t("German")}
+          </SelectItem>
+          <SelectItem value="fr" aria-label="French">
+            {t("French")}
           </SelectItem>
         </SelectContent>
       </Select>

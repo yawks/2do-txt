@@ -1,8 +1,4 @@
-import { ChipList } from "@/components/ChipList";
-import { TodoFileList } from "@/components/TodoFileList";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+import { FilterType, SortKey, useFilterStore } from "@/stores/filter-store";
 import {
   Select,
   SelectContent,
@@ -15,14 +11,19 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { FilterType, SortKey, useFilterStore } from "@/stores/filter-store";
-import { useSettingsStore } from "@/stores/settings-store";
+import { Trans, useTranslation } from "react-i18next";
+import { useCallback, useMemo } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ChipList } from "@/components/ChipList";
+import { HelpCircleIcon } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { TodoFileList } from "@/components/TodoFileList";
 import { getTaskListAttributes } from "@/utils/task-list";
 import { useHotkeys } from "@/utils/useHotkeys";
+import { useSettingsStore } from "@/stores/settings-store";
 import { useTask } from "@/utils/useTask";
-import { HelpCircleIcon } from "lucide-react";
-import { useCallback, useMemo } from "react";
-import { Trans, useTranslation } from "react-i18next";
 
 export function Filter() {
   const { t } = useTranslation();
@@ -36,6 +37,7 @@ export function Filter() {
     selectedContexts,
     selectedTags,
     hideCompletedTasks,
+    hideFutureTasks,
     setSortBy,
     setFilterType,
     togglePriority,
@@ -47,6 +49,7 @@ export function Filter() {
     setSelectedTags,
     toggleTag,
     setHideCompletedTasks,
+    setHideFutureTasks,
     setSearchTerm,
     setSelectedTaskListIds,
   } = useFilterStore();
@@ -239,6 +242,17 @@ export function Filter() {
           />
           <Label htmlFor="hideCompletedTasks">
             {t("Hide completed tasks")}
+          </Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="hideFutureTasks"
+            checked={hideFutureTasks}
+            onCheckedChange={(event) => setHideFutureTasks(event === true)}
+            aria-label="Hide future tasks"
+          />
+          <Label htmlFor="hideFutureTasks">
+            {t("Hide future tasks")}
           </Label>
         </div>
       </div>

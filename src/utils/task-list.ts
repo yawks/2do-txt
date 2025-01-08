@@ -1,12 +1,5 @@
 import { FilterType, SortKey, useFilterStore } from "@/stores/filter-store";
-import { groupBy } from "@/utils/array";
-import {
-  formatDate,
-  formatLocaleDate,
-  parseDate,
-  todayDate,
-} from "@/utils/date";
-import { parseTask, stringifyTask, Task } from "@/utils/task";
+import { Task, parseTask, stringifyTask } from "@/utils/task";
 import {
   addDays,
   isAfter,
@@ -15,6 +8,14 @@ import {
   isSameDay,
   isSameYear,
 } from "date-fns";
+import {
+  formatDate,
+  formatLocaleDate,
+  parseDate,
+  todayDate,
+} from "@/utils/date";
+
+import { groupBy } from "@/utils/array";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -143,6 +144,7 @@ export function useTimelineTasks(
     selectedContexts,
     selectedTags,
     hideCompletedTasks,
+    hideFutureTasks
   } = useFilterStore();
 
   const filteredTasks = filterTasks(items, {
@@ -157,7 +159,7 @@ export function useTimelineTasks(
 
   const today = todayDate();
 
-  const futureTasks: TimelineTask[] = filteredTasks
+  const futureTasks: TimelineTask[] = hideFutureTasks ? [] : filteredTasks
     .map((t) => ({
       ...t,
       _timelineDate: t.completionDate || t.dueDate || t.creationDate,
@@ -186,7 +188,7 @@ export function useTimelineTasks(
         isBefore(t.dueDate, addDays(today, 1)),
     )
     .map((t) => ({ ...t, _timelineDate: today }))
-    .sort((a, b) => timelineSort(a.dueDate, b.dueDate, "asc"));
+    .sort((a, b) => timelineSort(a.dueDate, b.dueDate, "desc"));
 
   // +Button
   filteredTasks.unshift({
@@ -246,9 +248,9 @@ export function useTimelineTasks(
       },
     }));
 
-  return futureTasks
-    .concat(todayTasks)
-    .concat(pastTasks)
+  const finalTaskList: TimelineTask[] = pastTasks
+  .concat(todayTasks)
+    .concat(futureTasks)
     .map((t, i, a) => ({
       ...t,
       _timelineFlags: {
@@ -267,6 +269,10 @@ export function useTimelineTasks(
         last: a.length === i + 1,
       },
     }));
+
+    console.log(finalTaskList);
+
+    return finalTaskList;
 }
 
 export function useTaskGroups(
@@ -656,7 +662,7 @@ function groupSortByDate(a?: string, b?: string) {
   }
 }
 
-function timelineSort(a?: Date, b?: Date, direction: "asc" | "desc" = "desc") {
+function timelineSort(a?: Date, b?: Date, direction: "asc" | "desc" = "asc") {
   if (a && !b) {
     return -1;
   } else if (!a && b) {

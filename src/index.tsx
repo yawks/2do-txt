@@ -1,12 +1,13 @@
-import { App } from "@/components/App";
-import { formatLocaleDate } from "@/utils/date";
 import "@fontsource/inter";
-import i18n from "i18next";
-import LanguageDetector from "i18next-browser-languagedetector";
-import Backend from "i18next-http-backend";
-import { createRoot } from "react-dom/client";
-import { initReactI18next } from "react-i18next";
 import "./index.css";
+
+import { App } from "@/components/App";
+import Backend from "i18next-http-backend";
+import LanguageDetector from "i18next-browser-languagedetector";
+import { createRoot } from "react-dom/client";
+import { formatLocaleDate } from "@/utils/date";
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
 
 i18n
   .use(Backend)
@@ -18,7 +19,7 @@ i18n
     },
     load: "languageOnly",
     fallbackLng: "en",
-    supportedLngs: ["en", "de"],
+    supportedLngs: ["en", "de", "fr"],
     interpolation: {
       escapeValue: false,
       format: (value, format, lng) => {

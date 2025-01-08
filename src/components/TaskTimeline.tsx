@@ -70,6 +70,7 @@ interface YearChipProps {
 const locales = {
   de: "d. LLL.",
   en: "d LLL",
+  fr: "d LLL",
 };
 
 export function TaskTimeline(props: TaskTimelineProps) {
@@ -104,21 +105,13 @@ export function TaskTimeline(props: TaskTimelineProps) {
     );
   }
 
-  function compareDate(a: TimelineTask, b: TimelineTask) {
-    if (a._timelineDate === undefined || b._timelineDate === undefined) {
-      return -2;
-    }
-    return a._timelineDate?.getTime()  <  b._timelineDate?.getTime() ? -1 : 1;
-  }
-  const orderedTasks = [...tasks].sort((a, b) => compareDate(a, b));
-  console.log(orderedTasks)
   return (
     <div
       ref={parent}
       className="flex flex-col pb-4 sm:justify-center"
       data-testid="task-list"
     >
-      {orderedTasks.map((task, index) => (
+      {tasks.map((task, index) => (
         <div key={task.id}>
           {!task._timelineFlags.firstOfToday && (
             <TaskItem
@@ -271,9 +264,9 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
   
   let borderColor = "";
   if (task.priority === "A") {
-    borderColor = " border-red-100";
+    borderColor = " border-red-500";
   } else if (task.priority === "B") {
-    borderColor = " border-orange-100";
+    borderColor = " border-orange-200";
   }
 
   return (
@@ -404,7 +397,7 @@ function TaskDate({ task }: WithTimelineTask) {
         flags.firstOfDay || flags.firstWithoutDate ? "visible" : "invisible",
       )}
     >
-      {!!dueDate && !completionDate && <BellIcon className="mr-2 h-4 w-4" />}
+      {/*!!dueDate && !completionDate && <BellIcon className="mr-2 h-4 w-4" />*/}
       {timelineDate && format(timelineDate, locales[language])}
       {flags.firstWithoutDate && t("Without date")}
     </TimelineDate>

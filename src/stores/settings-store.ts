@@ -1,10 +1,11 @@
-import { getPreferencesItem, setPreferencesItem } from "@/utils/preferences";
 import { createContext, useContext } from "react";
+import { getPreferencesItem, setPreferencesItem } from "@/utils/preferences";
+
+import { createStore } from "zustand/vanilla";
 import { getI18n } from "react-i18next";
 import { useStore as useZustandStore } from "zustand";
-import { createStore } from "zustand/vanilla";
 
-export type Language = "de" | "en";
+export type Language = "de" | "en" | "fr";
 
 export type ArchiveMode = "no-archiving" | "automatic" | "manual";
 
