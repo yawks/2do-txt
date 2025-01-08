@@ -268,7 +268,7 @@ export function useFormatBody() {
         <TagBox
           variant={outline && !task.completed ? "outline" : undefined}
           color={task.completed ? "muted" : "success"}
-          key={}
+          key=""
           className=""
           >
           {contexts.join(" ")}

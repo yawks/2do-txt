@@ -10,6 +10,7 @@ type PreferencesKeys =
   | "sort-by"
   | "filter-type"
   | "hide-completed-tasks"
+  | "hide-future-tasks"
   | "task-view"
   | "reminder-offset"
   | "selected-task-list-ids"

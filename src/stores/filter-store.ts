@@ -72,6 +72,7 @@ export async function filterLoader(): Promise<FilterFields> {
     getPreferencesItem<SortKey>("sort-by"),
     getPreferencesItem<FilterType>("filter-type"),
     getPreferencesItem<string>("hide-completed-tasks"),
+    getPreferencesItem<string>("hide-future-tasks"),
   ]);
 
   // removes any selected task list ids that no longer exist
@@ -201,7 +202,7 @@ export function initializeFilterStore(
     },
     setHideFutureTasks: (hideFutureTasks: boolean) => {
       set({ hideFutureTasks });
-      setPreferencesItem("hide-completed-tasks", hideFutureTasks.toString());
+      setPreferencesItem("hide-future-tasks", hideFutureTasks.toString());
     },
     setSelectedTaskListIds: (selectedTaskListIds: number[]) => {
       set({ selectedTaskListIds });
