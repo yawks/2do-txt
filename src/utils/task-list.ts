@@ -50,6 +50,7 @@ export interface TaskListFilter {
   selectedContexts: string[];
   selectedTags: string[];
   hideCompletedTasks: boolean;
+  hideFutureTasks: boolean;
 }
 
 export interface TimelineTask extends Task {
@@ -155,11 +156,12 @@ export function useTimelineTasks(
     selectedContexts,
     selectedTags,
     hideCompletedTasks,
+    hideFutureTasks
   });
 
   const today = todayDate();
 
-  const futureTasks: TimelineTask[] = hideFutureTasks ? [] : filteredTasks
+  const futureTasks: TimelineTask[] = filteredTasks
     .map((t) => ({
       ...t,
       _timelineDate: t.completionDate || t.dueDate || t.creationDate,
@@ -290,6 +292,7 @@ export function useTaskGroups(
     selectedContexts,
     selectedTags,
     hideCompletedTasks,
+    hideFutureTasks
   } = useFilterStore();
 
   const filteredTaskLists = taskLists.map((taskList) => ({
@@ -302,6 +305,7 @@ export function useTaskGroups(
       selectedContexts,
       selectedTags,
       hideCompletedTasks,
+      hideFutureTasks
     }).sort(sortByOriginalOrder),
   }));
 
@@ -317,6 +321,7 @@ export function useTaskGroups(
 
 function andTypePredicate(
   hideCompletedTasks: boolean,
+  hideFutureTasks: boolean,
   searchTerm: string,
   selectedPriorities: string[],
   selectedProjects: string[],
@@ -325,6 +330,10 @@ function andTypePredicate(
 ) {
   return (task: Task) => {
     if (hideCompletedTasks && task.completed) {
+      return false;
+    }
+
+    if (hideFutureTasks && task.dueDate && isAfter(task.dueDate, todayDate())) {
       return false;
     }
 
@@ -368,6 +377,7 @@ function andTypePredicate(
 
 function orTypePredicate(
   hideCompletedTasks: boolean,
+  hideFutureTasks: boolean,
   searchTerm: string,
   selectedPriorities: string[],
   selectedProjects: string[],
@@ -383,6 +393,10 @@ function orTypePredicate(
       selectedTags.length === 0;
 
     if (hideCompletedTasks && task.completed) {
+      return false;
+    }
+
+    if (hideFutureTasks && task.dueDate && isAfter(task.dueDate, todayDate())) {
       return false;
     }
 
@@ -432,11 +446,13 @@ export function filterTasks<T extends Task>(
     selectedContexts,
     selectedTags,
     hideCompletedTasks,
+    hideFutureTasks
   } = filter;
   return tasks.filter(
     type === "OR"
       ? orTypePredicate(
           hideCompletedTasks,
+          hideFutureTasks,
           searchTerm,
           selectedPriorities,
           selectedProjects,
@@ -445,6 +461,7 @@ export function filterTasks<T extends Task>(
         )
       : andTypePredicate(
           hideCompletedTasks,
+          hideFutureTasks,
           searchTerm,
           selectedPriorities,
           selectedProjects,
