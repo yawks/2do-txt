@@ -196,10 +196,10 @@ export function useFormatBody() {
       .split(/\s+/)
       .filter((word) => word.startsWith("+"));
     
-    const subStrings = task.body
+    const subStrings = [task.body
       .trim()
       .split(/\s+/)
-      .filter((word) => !word.startsWith("@") && !word.startsWith("+"));
+      .filter((word) => !word.startsWith("@") && !word.startsWith("+")  && !word.startsWith("due:")).join(" ")];
 
     const elements: ReactNode[] = subStrings
       .map((token, index) => {
@@ -258,7 +258,7 @@ export function useFormatBody() {
           );
         } else {
           const markdown = marked.parseInline(token) as string;
-          return <Fragment key={index}>{reactParse(markdown)}</Fragment>;
+          return <Fragment key={index}>{reactParse(markdown.replace(/<a /g, '<a class="text-blue-500" target="_blank" '))}</Fragment>;
         }
       })
       .filter((e) => !!e);
