@@ -23,6 +23,7 @@ import { formatLocaleDate, todayDate } from "@/utils/date";
 import { Chip } from "@/components/ui/chip";
 import { HAS_TOUCHSCREEN } from "@/utils/platform";
 import { ScrollTo } from "@/components/ScrollTo";
+import { TagBox } from "./TagBox";
 import { Task } from "@/utils/task";
 import { TaskBody } from "@/components/TaskBody";
 import { TimelineTask } from "@/utils/task-list";
@@ -269,6 +270,12 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
     borderColor = " border-orange-200";
   }
 
+  const taskView = useSettingsStore((state) => state.taskView);
+  const outline = taskView === "list";
+  const projects = task.body
+      .split(/\s+/)
+      .filter((word) => word.startsWith("+"));
+
   return (
     <div
       tabIndex={0}
@@ -298,14 +305,31 @@ const TaskContent = forwardRef<HTMLDivElement, TaskItemProps>((props, ref) => {
           {task.dueDate && !task.completionDate && (
             <div
               className={cn(
-                "flex items-center gap-0.5 text-[0.9em] text-warning",
+                "flex items-center gap-0.5 text-[0.9em] text-warning text-xs",
                 !task._timelineFlags.today && "sm:hidden",
               )}
             >
               <BellIcon className="mr-2 h-4 w-4" />
               {formatLocaleDate(task.dueDate, language)}
+              { projects.length > 0 &&
+                <TagBox
+                  variant={outline && !task.completed ? "outline" : undefined}
+                  color={task.completed ? "muted" : "info"}
+                  key=""
+                  className="ml-2 text-xs"
+                  >
+                  {projects.join(" ")}
+                </TagBox>}
             </div>
-          )}
+          ) || projects.length > 0 && (
+            <TagBox
+              variant={outline && !task.completed ? "outline" : undefined}
+              color={task.completed ? "muted" : "info"}
+              key=""
+              className="text-xs"
+              >
+              {projects.join(" ")}
+          </TagBox>)}
           {task.completionDate && (
             <div className="flex gap-0.5 text-[0.9em] text-muted-foreground sm:hidden">
               <CheckCircleIcon className="mr-2 h-4 w-4" />

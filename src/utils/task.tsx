@@ -192,10 +192,6 @@ export function useFormatBody() {
       .split(/\s+/)
       .filter((word) => word.startsWith("@"));
     
-    const projects = task.body
-      .split(/\s+/)
-      .filter((word) => word.startsWith("+"));
-    
     const subStrings = [task.body
       .trim()
       .split(/\s+/)
@@ -264,17 +260,18 @@ export function useFormatBody() {
       .filter((e) => !!e);
     
     elements.push(
-      <div className="mt-2">
+      <div className="">
         <TagBox
           variant={outline && !task.completed ? "outline" : undefined}
           color={task.completed ? "muted" : "success"}
           key=""
-          className=""
+          className="text-xs"
           >
           {contexts.join(" ")}
         </TagBox>
       </div>);
-
+    
+    
     if (task.priority && sortBy !== "priority") {
       const priorityElement = (
         <TagBox
